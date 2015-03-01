@@ -7,20 +7,23 @@ namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory("Bolt Networking")]
 	[Tooltip("Check if this is a client.")]
-	public class BoltIsClient : FsmStateAction
+	public class BoltEntityIsClient : FsmStateAction
 	{
-		[RequiredField]
 		[Tooltip("Bolt's return on the isClient test.")]
 		[UIHint(UIHint.Variable)]
 		public FsmBool isClient;
+
 		[Tooltip("Optional event.")]
 		public FsmEvent isAClient;
+
 		[Tooltip("Optional event.")]
 		public FsmEvent isNotAClient;
 
 		public override void OnEnter()
 		{
-			isClient.Value = BoltNetwork.isClient;
+			bool b = BoltNetwork.isClient;
+			isClient.Value = b;
+
 			Fsm.Event(isClient.Value ? isAClient : isNotAClient);
 			Finish ();
 		}

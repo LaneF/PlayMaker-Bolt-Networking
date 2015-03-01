@@ -11,6 +11,8 @@ namespace HutongGames.PlayMaker.Actions
 		[Tooltip("Choose a Prefab from the Project Hierarchy.")]
 		public FsmGameObject prefab;
 
+		// TODO Add option for instantiation by PrefabId.
+
 		[Tooltip("Optional Spawn Point.")]
 		public FsmGameObject spawnPoint;
 		
@@ -19,6 +21,9 @@ namespace HutongGames.PlayMaker.Actions
 		
 		[Tooltip("Rotation. NOTE: Overrides the rotation of the Spawn Point.")]
 		public FsmVector3 rotation;
+
+		[Tooltip("The source of the instantiation claims control of the entity.")]
+		public FsmBool takeControl;
 
 		[Tooltip("Send an event when finished.")]
 		public FsmEvent finishEvent;
@@ -33,6 +38,8 @@ namespace HutongGames.PlayMaker.Actions
 			spawnPoint = null;
 			position = new FsmVector3 { UseVariable = true };
 			rotation = new FsmVector3 { UseVariable = true };
+
+			takeControl = true;
 			finishEvent = null;
 			storeGameObject = null;
 		}
@@ -73,6 +80,8 @@ namespace HutongGames.PlayMaker.Actions
 
 				var entity = BoltNetwork.Instantiate(go, spawnPosition, Quaternion.Euler(spawnRotation));
 				storeGameObject = entity.gameObject;
+
+				if (takeControl.Value) { entity.TakeControl(); }
 			}
 
 			Fsm.Event(finishEvent);

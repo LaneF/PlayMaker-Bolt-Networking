@@ -2,15 +2,15 @@
 /*--- __ECO__ __ACTION__ ---*/
 
 using UnityEngine;
-using Bolt;
-using BoltInternal;
 
+// TODO finish this action!
+// custom editor to handle property types?
 
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory("Bolt Networking")]
 	[Tooltip("Sync a property on the network.")]
-	public class BoltGetProperty : FsmStateAction
+	public class BoltEntityGetProperty : FsmStateAction
 	{
 		[RequiredField]
 		public FsmOwnerDefault gameObject;
@@ -41,6 +41,8 @@ namespace HutongGames.PlayMaker.Actions
 		public override void Reset()
 		{
 		}
+
+
 
 //		public override void OnEnter()
 //		{
