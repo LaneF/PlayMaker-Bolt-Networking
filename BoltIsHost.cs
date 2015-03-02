@@ -6,25 +6,25 @@ using UnityEngine;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory("Bolt Networking")]
-	[Tooltip("Check if this is a client.")]
-	public class BoltEntityIsClient : FsmStateAction
+	[Tooltip("Check if this user is the Server.")]
+	public class BoltIsServer : FsmStateAction
 	{
-		[Tooltip("Bolt's return on the isClient test.")]
+		[Tooltip("Bolt's return on the isServer test.")]
 		[UIHint(UIHint.Variable)]
-		public FsmBool isClient;
+		public FsmBool result;
 
 		[Tooltip("Optional event.")]
-		public FsmEvent isAClient;
+		public FsmEvent isServer;
 
 		[Tooltip("Optional event.")]
-		public FsmEvent isNotAClient;
+		public FsmEvent isNotServer;
 
 		public override void OnEnter()
 		{
-			bool b = BoltNetwork.isClient;
-			isClient.Value = b;
+			bool b = BoltNetwork.isServer;
+			result.Value = b;
 
-			Fsm.Event(isClient.Value ? isAClient : isNotAClient);
+			Fsm.Event(b ? isServer : isNotServer);
 			Finish ();
 		}
 	}
