@@ -12,6 +12,7 @@ namespace HutongGames.PlayMaker.Actions
 		[Tooltip("The GameObject in question.")]
 		public FsmOwnerDefault gameObject;
 
+		[UIHint(UIHint.Variable)]
 		[Tooltip("Optionally store the result of the check.")]
 		public FsmBool hasControl;
 
@@ -32,15 +33,17 @@ namespace HutongGames.PlayMaker.Actions
 		public override void OnEnter()
 		{
 			GameObject go = Fsm.GetOwnerDefaultTarget(gameObject);
-			if (go != null){
 
+			if (go != null)
+			{
 				var entity = go.GetComponent<BoltEntity>();
 				bool b = entity.hasControl;
 				hasControl.Value = b;
 
 				Fsm.Event(b ? doesHaveControl : doesNotHaveControl);
-				Finish ();
 			}
+
+			Finish ();
 		}
 	}
 }

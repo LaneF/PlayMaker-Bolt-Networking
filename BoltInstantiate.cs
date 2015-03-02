@@ -78,9 +78,10 @@ namespace HutongGames.PlayMaker.Actions
 					}
 				}
 
-				var entity = BoltNetwork.Instantiate(go, spawnPosition, Quaternion.Euler(spawnRotation));
-				storeGameObject = entity.gameObject;
+				BoltEntity entity = BoltNetwork.Instantiate(go, spawnPosition, Quaternion.Euler(spawnRotation));
+				storeGameObject.Value = entity.gameObject;
 
+				// No one has control of an entity until explicitly defined.
 				if (takeControl.Value) { entity.TakeControl(); }
 			}
 
