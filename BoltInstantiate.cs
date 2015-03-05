@@ -22,8 +22,16 @@ namespace HutongGames.PlayMaker.Actions
 		[Tooltip("Rotation. NOTE: Overrides the rotation of the Spawn Point.")]
 		public FsmVector3 rotation;
 
-		[Tooltip("The source of the instantiation claims control of the entity.")]
+		[Tooltip("The source of the instantiation will take control of the entity. \n" +
+			"Otherwise, no specific connection will have control of the GameObject.")]
 		public FsmBool takeControl;
+
+		[Tooltip("SetTransforms is Bolt's way to syncing the Transform of an object across the network.\n" +
+			"If this instance needs to be synced, then this bool should be true.")]
+		public FsmBool setTransforms;
+
+		[Tooltip("The Transform property name in the State of the target entity.")]
+		public FsmString transformPropertyName;
 
 		[Tooltip("Send an event when finished.")]
 		public FsmEvent finishEvent;
@@ -40,6 +48,8 @@ namespace HutongGames.PlayMaker.Actions
 			rotation = new FsmVector3 { UseVariable = true };
 
 			takeControl = true;
+			transformPropertyName = "Transform";
+			setTransforms = true;
 			finishEvent = null;
 			storeGameObject = null;
 		}
@@ -82,10 +92,25 @@ namespace HutongGames.PlayMaker.Actions
 				storeGameObject.Value = entity.gameObject;
 
 				// No one has control of an entity until explicitly defined.
-				if (takeControl.Value) { entity.TakeControl(); }
+				if (takeControl.Value) 
+				{ 
+					entity.TakeControl();
+				}
+
+				// Invoke SetTransforms() when the entity is Attached()
+				if (setTransforms.Value)
+				{
+					BoltPlayMakerProxy _b = prefab.Value.GetComponent<BoltPlayMakerProxy>();
+					_b.transformName = transformPropertyName.Value;
+					_b.doSetTransforms = true;
+				}
 			}
 
-			Fsm.Event(finishEvent);
+			if (finishEvent != null)
+			{
+				Fsm.Event(finishEvent);
+			}
+
 			Finish ();
 		}
 	}
