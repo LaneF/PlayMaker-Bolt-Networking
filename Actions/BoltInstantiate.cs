@@ -1,6 +1,7 @@
 /*--- __ECO__ __ACTION__ ---*/
 
 using UnityEngine;
+using BoltPlayMakerUtils;
 
 namespace HutongGames.PlayMaker.Actions
 {
@@ -88,7 +89,7 @@ namespace HutongGames.PlayMaker.Actions
 					}
 				}
 
-				BoltEntity entity = BoltNetwork.Instantiate(go, spawnPosition, Quaternion.Euler(spawnRotation));
+                BoltEntity entity = BoltNetwork.Instantiate(go, spawnPosition, Quaternion.Euler(spawnRotation));
 				storeGameObject.Value = entity.gameObject;
 
 				// No one has control of an entity until explicitly defined.

@@ -1,6 +1,7 @@
 /*--- __ECO__ __ACTION__ ---*/
 
 using UnityEngine;
+using BoltPlayMakerUtils;
 
 namespace HutongGames.PlayMaker.Actions
 {
@@ -36,8 +37,7 @@ namespace HutongGames.PlayMaker.Actions
 
 			if (go != null)
 			{
-				var entity = go.GetComponent<BoltEntity>();
-				bool b = entity.hasControl;
+				bool b = (Get.Entity(go)).hasControl;
 				hasControl.Value = b;
 
 				Fsm.Event(b ? doesHaveControl : doesNotHaveControl);

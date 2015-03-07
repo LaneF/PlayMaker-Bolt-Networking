@@ -1,27 +1,21 @@
 /*--- __ECO__ __ACTION__ ---*/
 
 using UnityEngine;
-
-// TODO Option to store the GameObject that the PrefabId points to.
+using BoltPlayMakerUtils;
 
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory("Bolt Networking")]
 	[Tooltip("Get the Prefab Id of a Bolt GameObject.")]
-	public class BoltEntityGetPrefabId : FsmStateAction
+	public class BoltEntityTakeControl : FsmStateAction
 	{
 		[RequiredField]
 		[Tooltip("The target GameObject.")]
 		public FsmOwnerDefault gameObject;
 
-		[RequiredField]
-		[UIHint(UIHint.Variable)]
-		public FsmInt prefabId;
-
 		public override void Reset()
 		{
 			gameObject = null;
-			prefabId = null;
 		}
 
 		public override void OnEnter()
@@ -30,8 +24,7 @@ namespace HutongGames.PlayMaker.Actions
 
 			if (go != null)
 			{
-				var entity = go.GetComponent<BoltEntity>().prefabId.Value;
-				prefabId.Value = entity;
+				Get.Entity(go).TakeControl();
 			}
 
 			Finish ();
