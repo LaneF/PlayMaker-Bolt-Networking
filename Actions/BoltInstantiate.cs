@@ -101,9 +101,9 @@ namespace HutongGames.PlayMaker.Actions
 				// Invoke SetTransforms() when the entity is Attached()
 				if (setTransforms.Value)
 				{
-					BoltPlayMakerProxy _b = prefab.Value.GetComponent<BoltPlayMakerProxy>();
+                    BoltEntityPlaymakerProxy _b = prefab.Value.GetComponent<BoltEntityPlaymakerProxy>();
 					_b.transformName = transformPropertyName.Value;
-					_b.doSetTransforms = true;
+					_b.setTransforms = true;
 				}
 			}
 
