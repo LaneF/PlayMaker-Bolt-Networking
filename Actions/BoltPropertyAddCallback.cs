@@ -10,42 +10,55 @@ namespace HutongGames.PlayMaker.Actions
     [Tooltip("Fire an event on this FSM when a Property changes.")]
     public class BoltPropertyAddCallback : FsmStateAction
     {
-        [ActionSection("//Target Options//")]
+        [ActionSection("   Property Options")]
 
         [RequiredField]
-        [Tooltip("The GameObject with the property.")]
-        public FsmOwnerDefault gameObject;
-
-        [Tooltip("Where to send the event.")]
-        public PlayMakerFSM target;
+        [Tooltip("The GameObject with the Property you want a Callback on.")]
+        public FsmOwnerDefault propertyHost;
 
         [RequiredField]
         [Tooltip("The name of the Property.")]
         public FsmString propertyName;
 
-        [ActionSection("//Event Options//")]
+        [ActionSection("   Target Options")]
 
+        [RequiredField]
+        [Tooltip("The GameObject to send Callback events to.")]
+        public FsmOwnerDefault targetGameObject;
+
+        [RequiredField]
+        [Tooltip("The FSM to send Callback events to.")]
+        public FsmString targetFsmName;
+
+        [ActionSection("   Event Options")]
+
+        [RequiredField]
         [Tooltip("Event to send when the property changes. Highly recommend using a Global Event for this.")]
-        public FsmEvent changedEvent;
+        public FsmString callbackEventName;
 
-        [Tooltip("Option to never finish this action. Possibly useful if not using Global Events for the callback.")]
+        public bool debugInfo;
+
+        [Tooltip("Option to never finish this action. Rarely useful, but here just in case.")]
         public FsmBool neverFinishState;
 
-
-        private GameObject _go;
+        private GameObject _goHost;
+        private GameObject _goTarget;
 
         public override void Reset()
         {
-            gameObject = null;
-            target = null;
-            changedEvent = null;
+            propertyHost = null;
             propertyName = "SomeProperty";
+            targetGameObject = null;
+            targetFsmName = "FSM";
+            callbackEventName = "";
             neverFinishState = false;
+            debugInfo = false;
         }
 
         public override void OnEnter()
         {
-            _go = Fsm.GetOwnerDefaultTarget(gameObject);
+            _goHost = Fsm.GetOwnerDefaultTarget(propertyHost);
+            _goTarget = Fsm.GetOwnerDefaultTarget(targetGameObject);
 
             Main();
 
@@ -62,16 +75,23 @@ namespace HutongGames.PlayMaker.Actions
 
         public void Main()
         {
-            if (_go == null)
+            if (_goHost == null)
             {
-                Debug.Log("GameObject is null!");
+                Debug.LogWarning("The property host GameObject is null!");
                 return;
             }
 
-            _go = Fsm.GetOwnerDefaultTarget(gameObject);
+            // get the target fsm based on inputs
+            PlayMakerFSM targetFsm = PlayMakerUtils.FindFsmOnGameObject(_goTarget, targetFsmName.Value);
 
-            CallbackEvent.Add(_go, propertyName.Value, target, changedEvent.Name);
-            Debug.Log("Added a callback to " + _go + " on " + propertyName + ".");
+            // hook the callback in
+            CallbackEvent.Add(_goHost, propertyName.Value, targetFsm, callbackEventName.Value);
+
+            if (debugInfo)
+            {
+                Debug.Log("Added a Callback to " + _goHost + " on " + propertyName + ". ");
+                Debug.Log("Callback hooked to " + _goTarget + " in FSM '" + targetFsmName.Value + "', sending event '" + callbackEventName.Value + "'.");
+            }
         }
     }
 }

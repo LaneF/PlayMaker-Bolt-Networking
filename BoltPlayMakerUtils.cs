@@ -76,7 +76,7 @@ namespace BoltPlayMakerUtils
         /// <param name="go">Target GameObject</param>
         /// <param name="propertyName">Property Name</param>
         /// <param name="value">Value to set Property to</param>
-        public static void Property(GameObject go, string propertyName, object value)
+        public static void Property(this GameObject go, string propertyName, object value)
         {
             Get.Entity(go).GetState<IState>().SetDynamic(propertyName, value);
         }
@@ -108,24 +108,24 @@ namespace BoltPlayMakerUtils
         /// <summary>
         /// Used to Add a Callback that will fire an FSM Event when a property changes.
         /// </summary>
-        /// <param name="go">The GameObject to add the Callback to</param>
+        /// <param name="hostGameObject">The GameObject to add the Callback to</param>
         /// <param name="propertyName">The Property name the Callback operates on</param>
-        /// <param name="returnFSM">The target FSM that the callback fires the event on</param>
-        /// <param name="returnEventName">The named FSM Event to fire</param>
-        public static void Add(this GameObject go, string propertyName, PlayMakerFSM returnTarget, string callEvent)
+        /// <param name="returnFsm">The target FSM that the callback fires the event on</param>
+        /// <param name="returnEvent">The named FSM Event to fire</param>
+        public static void Add(this GameObject hostGameObject, string propertyName, PlayMakerFSM returnFsm, string returnEvent)
         {
             // I don't see a safe way to have multiple Callbacks fire different events on the same Entity and Property.
-            if (CallbackEvent.Find(go, propertyName) == null)
+            if (CallbackEvent.Find(hostGameObject, propertyName) == null)
             {
-                var cb = go.AddComponent<BPCallback>();
+                var cb = hostGameObject.AddComponent<BPCallback>();
                 cb.propertyName = propertyName;
-                cb.returnTarget = returnTarget;
-                cb.callEvent = callEvent;
+                cb.returnTarget = returnFsm;
+                cb.callEvent = returnEvent;
 
-                cb.Setup(propertyName, returnTarget, callEvent); // the component adds its own callback in Setup().
+                cb.Setup(propertyName, returnFsm, returnEvent); // the component adds its own callback in Setup().
 
             } else {
-                Debug.LogWarning("Callback to property '" + propertyName + "' already exists on " + go + "!... Doing nothing."); 
+                Debug.LogWarning("Callback to property '" + propertyName + "' already exists on " + hostGameObject + "!... Doing nothing."); 
             }
         }
 

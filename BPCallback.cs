@@ -21,10 +21,15 @@ public class BPCallback : Bolt.EntityBehaviour<IState>
         callEvent = anEvent;
 
         Debug.Log("Setup this Callback!");
-        Get.State(gameObject).AddCallback(propertyName, DoCallback);
+        state.AddCallback(propertyName, DoCallback);
 	}
 
-    void DoCallback()
+    public void Update()
+    {
+        if (returnTarget == null) { RemoveCallback(); } // callback should die if it has no target
+    }
+
+    public void DoCallback()
     {
         Debug.Log("Did a callback!");
         returnTarget.SendEvent(callEvent);
