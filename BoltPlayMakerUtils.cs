@@ -66,6 +66,12 @@ namespace BoltPlayMakerUtils
             Debug.LogWarning("No FSM by name '" + fsmName + "' was found.");
             return null;
         }
+
+        public static PlayMakerFSM[] AllFsmsInScene()
+        {
+            return null; 
+            // PlayMakerFSM[] fsms = HutongGames.PlayMaker.f
+        }
 	}
 
     public static class Set

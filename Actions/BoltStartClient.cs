@@ -10,6 +10,7 @@ namespace HutongGames.PlayMaker.Actions
 	[Tooltip("Start a Bolt Client and connect to a Server.")]
 	public class BoltStartClient : FsmStateAction
 	{
+        [ActionSection("This client will sync to server session.")]
         [Tooltip("Server IP address.")]
         public FsmString serverAddress;
 
