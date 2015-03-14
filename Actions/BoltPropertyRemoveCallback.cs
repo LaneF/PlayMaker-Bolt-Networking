@@ -41,7 +41,7 @@ namespace HutongGames.PlayMaker.Actions
                 return;
             }
 
-            CallbackEvent.Remove(_goHost, propertyName.Value);
+            Callback.Remove(_goHost, propertyName.Value);
         }
     }
 }

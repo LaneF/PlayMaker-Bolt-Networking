@@ -1,5 +1,6 @@
 using UnityEngine;
 using Bolt;
+using BoltPlaymaker;
 using System;
 using System.Collections;
 using HutongGames.PlayMaker;
@@ -89,7 +90,7 @@ namespace BoltPlayMakerUtils
     }
 
 
-    public static class CallbackEvent
+    public static class Callback
     {
         /// <summary>
         /// Used to find a Callback for a specific property on a GameObject.
@@ -97,9 +98,9 @@ namespace BoltPlayMakerUtils
         /// <param name="go"></param>
         /// <param name="propertyName"></param>
         /// <returns>If found, returns the BPCallback component</returns>
-        public static BPCallback Find(this GameObject go, string propertyName)
+        public static CallbackEvent Find(this GameObject go, string propertyName)
         {
-            BPCallback[] callbacks = go.GetComponents<BPCallback>();
+            CallbackEvent[] callbacks = go.GetComponents<CallbackEvent>();
             for (int i = 0; i < callbacks.Length; i++)
             {
                 if (callbacks[i].propertyName == propertyName)
@@ -121,9 +122,9 @@ namespace BoltPlayMakerUtils
         public static void Add(this GameObject hostGameObject, string propertyName, PlayMakerFSM returnFsm, string returnEvent)
         {
             // I don't see a safe way to have multiple Callbacks fire different events on the same Entity and Property.
-            if (CallbackEvent.Find(hostGameObject, propertyName) == null)
+            if (Callback.Find(hostGameObject, propertyName) == null)
             {
-                var cb = hostGameObject.AddComponent<BPCallback>();
+                var cb = hostGameObject.AddComponent<CallbackEvent>();
                 cb.propertyName = propertyName;
                 cb.returnTarget = returnFsm;
                 cb.callEvent = returnEvent;
@@ -142,7 +143,7 @@ namespace BoltPlayMakerUtils
         /// <param name="propertyName">The name of the property the Callback is operating on</param>
         public static void Remove(this GameObject go, string propertyName)
         {
-            BPCallback cb = CallbackEvent.Find(go, propertyName);
+            CallbackEvent cb = Callback.Find(go, propertyName);
             if (cb == null)
             {
                 Debug.LogWarning("Callback to property '" + propertyName + "' not found on " + go + "!"); 

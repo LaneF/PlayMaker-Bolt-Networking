@@ -85,7 +85,7 @@ namespace HutongGames.PlayMaker.Actions
             PlayMakerFSM targetFsm = PlayMakerUtils.FindFsmOnGameObject(_goTarget, targetFsmName.Value);
 
             // hook the callback in
-            CallbackEvent.Add(_goHost, propertyName.Value, targetFsm, callbackEventName.Value);
+            Callback.Add(_goHost, propertyName.Value, targetFsm, callbackEventName.Value);
 
             if (debugInfo)
             {
