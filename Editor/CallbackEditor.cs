@@ -80,16 +80,16 @@ namespace HutongGames.PlayMakerEditor
                     HasBoltEntity();
                     break;
                 case BoltAddGlobalCallback.CallbackType.BoltShutdown:
-                    // this callback has no arguments
+                    RevealBase(); // this callback has no arguments
                     break;
                 case BoltAddGlobalCallback.CallbackType.BoltStarted:
-                    // this callback has no arguments
+                    RevealBase(); // this callback has no arguments
                     break;
                 case BoltAddGlobalCallback.CallbackType.BoltStartFailed:
-                    // this callback has no arguments
+                    RevealBase(); // this callback has no arguments
                     break;
                 case BoltAddGlobalCallback.CallbackType.BoltStartPending:
-                    // this callback has no arguments
+                    RevealBase(); // this callback has no arguments
                     break;
                 case BoltAddGlobalCallback.CallbackType.SceneLoadRemoteDone:
                     HasBoltConnection();
@@ -101,8 +101,6 @@ namespace HutongGames.PlayMakerEditor
                     HasString();
                     break;
             }
-
-            //return GUI.changed;
             return true;
         }
     }
