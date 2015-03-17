@@ -14,31 +14,41 @@ namespace HutongGames.PlayMakerEditor
     public class EventSendEditor : CustomActionEditor
     {
         BoltEventSend Action;
-        Project proj = BPEditorUtils.OpenProject();
-        string[] eventNames = BPEditorUtils.GetEventNames().ToArray();
+        string[] eventNames = BPEditorUtils.GetEventNameList().ToArray();
         int index = 0;
 
         public override bool OnGUI()
         {
             Action = target as BoltEventSend; // identify the target action
-            FsmBoltEvent guiItem = Action.EventId;
-            guiItem.targetList = new string[3] {"test","test2","test3"};
-            guiItem.selectionId = EditorGUILayout.Popup("Event", guiItem.selectionId, guiItem.targetList);
+            Action.targetList = eventNames; // update the list
+            Action.selectionId = EditorGUILayout.Popup("Event", Action.selectionId, Action.targetList); // update the gui in the editor
 
-            return true;
-        }
+            EventDefinition choiceEvent = BPEditorUtils.GetEventByIndex(index); // grab the chosen event
+            List<PropertyDefinition> propList = BPEditorUtils.GetEventPropertyList(choiceEvent); // grab the list of properties in that event
+            List<string> propListNames = BPEditorUtils.GetPropertyNameList(choiceEvent); // grab the list of names of those properties
+            Action.propNames = propListNames.ToArray();
 
-        public void UpdateVars()
-        {/*
-            List<PropertyDefinition> list = BPProjectHelper.GetEventProperties();
-
-            for (int i = 0; i < list.Count; i++) // Loop with for.
+            for (int i = 0; i < propList.Count; i++)
             {
-                switch (list[i].PropertyType)
+                Debug.Log("enter loop, i = " + i + " and propListCount = " + propList.Count);
+                Debug.Log("Action.propNames[i] = " + Action.propNames[i]);
+                Debug.Log("Action.Fsm = " + Action.Fsm);
+                Debug.Log("Action.propVariables[i] = " + Action.propVariables[i]);
+                //Action.propNames.SetValue(propListNames[i], i);
+                Action.propVariables[i].SetValue(VariableEditor.FsmVarPopup(new GUIContent(Action.propNames[i]), Action.Fsm, Action.propVariables[i]));
             }
-          * */
+
+            if (index != Action.selectionId) 
+            {
+                index = Action.selectionId;
+                return true; 
+            }
+
+            else
+            {
+                return false;
+            }
+            
         }
-
-
     }
 }
