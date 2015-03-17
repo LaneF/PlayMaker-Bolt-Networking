@@ -3,7 +3,7 @@ using Bolt;
 using Bolt.Compiler;
 using System.Collections.Generic;
 
-public static class BPProjectHelper
+public static class BPEditorUtils
 {
     public static List<EventDefinition> GetEventList()
     {

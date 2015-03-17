@@ -12,24 +12,17 @@ namespace HutongGames.PlayMaker.Actions
     [Tooltip("Send a Bolt Event on the Network.")]
     public class BoltEventSend : FsmStateAction
     {
-        [UIHint(UIHint.Variable)]
-        public int EventId = 0;
+        public FsmBoltEvent EventId;
 
-        [Tooltip("The Endpoint IPv4 Address.")]
-        [UIHint(UIHint.Variable)]
-        public FsmInt endPointIp;
-        private UdpKit.UdpEndPoint _endPoint;
+        [CompoundArray("Properties", "name", "fsm variable")]
+        public string[] properties;
+        public FsmVar[] variables;
 
         public string test;
 
         public bool debugInfo;
 
         public override void Reset()
-        {
-
-        }
-
-        public void OnAwake()
         {
 
         }

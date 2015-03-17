@@ -14,27 +14,17 @@ namespace HutongGames.PlayMakerEditor
     public class EventSendEditor : CustomActionEditor
     {
         BoltEventSend Action;
-        Project proj = BPProjectHelper.OpenProject();
-        string[] eventNames = BPProjectHelper.GetEventNames().ToArray();
+        Project proj = BPEditorUtils.OpenProject();
+        string[] eventNames = BPEditorUtils.GetEventNames().ToArray();
         int index = 0;
-
-        public void RevealBase()
-        {
-            EditField("index");
-            EditField("test");
-        }
 
         public override bool OnGUI()
         {
             Action = target as BoltEventSend; // identify the target action
-            Action.EventId = EditorGUILayout.Popup(Action.EventId, eventNames);
-            RevealBase();
-            
-            if (Action.EventId != index) // need to update the property variables!
-            {
-                index = Action.EventId;
-                UpdateVars();
-            }
+            FsmBoltEvent guiItem = Action.EventId;
+            guiItem.targetList = new string[3] {"test","test2","test3"};
+            guiItem.selectionId = EditorGUILayout.Popup("Event", guiItem.selectionId, guiItem.targetList);
+
             return true;
         }
 
@@ -48,5 +38,7 @@ namespace HutongGames.PlayMakerEditor
             }
           * */
         }
+
+
     }
 }
