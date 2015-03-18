@@ -6,6 +6,8 @@ using System.Collections;
 
 namespace HutongGames.PlayMaker.Actions
 {
+
+    // INCOMPLETE!!!
     [ActionCategory("Bolt Networking")]
     [Tooltip("Open a callback for a specific target.")]
     public class BoltAddGlobalCallback : FsmStateAction
@@ -110,7 +112,7 @@ namespace HutongGames.PlayMaker.Actions
 
         public void Main()
         {
-            // TODO add logic for bouncing events
+            // TODO
         }
     }
 }

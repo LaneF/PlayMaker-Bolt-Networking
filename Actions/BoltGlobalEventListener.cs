@@ -5,6 +5,7 @@ using BoltPlayMakerUtils;
 
 namespace HutongGames.PlayMaker.Actions
 {
+    // INCOMPLETE!!!
 	[ActionCategory("Bolt Networking")]
 	[Tooltip("Fire events from on Network Global Events.")]
 	public class BoltGlobalEventListener : FsmStateAction
