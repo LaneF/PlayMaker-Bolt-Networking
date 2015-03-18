@@ -15,7 +15,7 @@ namespace HutongGames.PlayMakerEditor
     {
         BoltEventSend Action;
         string[] eventNames = BPEditorUtils.GetEventNameList().ToArray();
-        int index = 0;
+        int localIndex = 0;
 
         public override bool OnGUI()
         {
@@ -23,25 +23,24 @@ namespace HutongGames.PlayMakerEditor
             Action.targetList = eventNames; // update the list
             Action.selectionId = EditorGUILayout.Popup("Event", Action.selectionId, Action.targetList); // update the gui in the editor
 
-            EventDefinition choiceEvent = BPEditorUtils.GetEventByIndex(index); // grab the chosen event
+            EventDefinition choiceEvent = BPEditorUtils.GetEventByIndex(localIndex); // grab the chosen event
             List<PropertyDefinition> propList = BPEditorUtils.GetEventPropertyList(choiceEvent); // grab the list of properties in that event
-            List<string> propListNames = BPEditorUtils.GetPropertyNameList(choiceEvent); // grab the list of names of those properties
-            Action.propNames = propListNames.ToArray();
+            List<string> propNames = BPEditorUtils.GetPropertyNameList(choiceEvent);
 
-            for (int i = 0; i < propList.Count; i++)
+            if (localIndex != Action.selectionId) 
             {
-                Debug.Log("enter loop, i = " + i + " and propListCount = " + propList.Count);
-                Debug.Log("Action.propNames[i] = " + Action.propNames[i]);
-                Debug.Log("Action.Fsm = " + Action.Fsm);
-                Debug.Log("Action.propVariables[i] = " + Action.propVariables[i]);
-                //Action.propNames.SetValue(propListNames[i], i);
-                Action.propVariables[i].SetValue(VariableEditor.FsmVarPopup(new GUIContent(Action.propNames[i]), Action.Fsm, Action.propVariables[i]));
-            }
+                for (int i = 0; i < propList.Count; i++)
+                {
+                    Debug.Log("enter loop, i = " + i + " and propListCount = " + propList.Count);
+                    Debug.Log("Action.propNames[i] = " + propNames[i]);
+                    Debug.Log("Action.Fsm = " + Action.Fsm);
+                    Debug.Log("Action.propVariables[i] = " + Action.propVariables[i]);
 
-            if (index != Action.selectionId) 
-            {
-                index = Action.selectionId;
-                return true; 
+                    Action.propVariables[i] = VariableEditor.FsmVarPopup(new GUIContent(propNames[i]), Action.Fsm, Action.propVariables[i]);
+                }
+
+                localIndex = Action.selectionId;
+                return true;
             }
 
             else
