@@ -2,6 +2,9 @@
 using BoltPlayMakerUtils;
 using System.Collections;
 
+
+// TODO find a way to actually use protocol tokens?
+
 /// <summary>
 /// This is a global event reciever for Network events, handled on each individual session.
 /// </summary>
@@ -14,7 +17,7 @@ public class BoltNetworkGlobalCallbacks : Bolt.GlobalEventListener
     /// <param name="entity"></param>
     public override void ControlOfEntityGained(BoltEntity entity)
     {
-        BoltConsole.Write("BPM ControlOfEntityGained");
+        BoltConsole.Write("BPM Control Of Entity Gained" + entity.name);
     }
 
     /// <summary>
@@ -24,7 +27,7 @@ public class BoltNetworkGlobalCallbacks : Bolt.GlobalEventListener
     /// <param name="token"></param>
     public override void ControlOfEntityGained(BoltEntity entity, Bolt.IProtocolToken token)
     {
-        BoltConsole.Write("BPM ControlOfEntityGained");
+        BoltConsole.Write("BPM Control Of Entity Gained");
     }
 
     /// <summary>
@@ -124,28 +127,6 @@ public class BoltNetworkGlobalCallbacks : Bolt.GlobalEventListener
     {
         BoltConsole.Write("BPM PortMappingChanged");
     }
-
-    /* Zeus global events
-    public override void ZeusConnected(UdpKit.UdpEndPoint endpoint)
-    {
-        
-    }
-
-    public override void ZeusConnectFailed(UdpKit.UdpEndPoint endpoint)
-    {
-        
-    }
-
-    public override void ZeusDisconnected(UdpKit.UdpEndPoint endpoint)
-    {
-        
-    }
-
-    public override void ZeusNatProbeResult(UdpKit.NatFeatures features)
-    {
-  
-    }
-    */
 
     /// <summary>
     /// Override this method and return true if you want the event listener to keep being attached to Bolt even when Bolt shuts down and starts again.

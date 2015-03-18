@@ -10,7 +10,7 @@ namespace HutongGames.PlayMaker.Actions
     // INCOMPLETE!!!
     [ActionCategory("Bolt Networking")]
     [Tooltip("Open a callback for a specific target.")]
-    public class BoltAddGlobalCallback : FsmStateAction
+    public class BoltGlobalCallbackAdd : FsmStateAction
     {
         public enum CallbackType
         {

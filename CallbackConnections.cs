@@ -63,7 +63,7 @@ namespace BoltPlaymaker
         {
             targetFsm.SendEvent(callEvent);
             // (No API on this)...
-            BoltConsole.Write("BPM BoltStartFailed()");
+            BoltConsole.Write("BPM Bolt Failed to Start...");
         }
 
         public override void BoltStartPending()
