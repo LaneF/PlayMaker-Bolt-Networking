@@ -1,6 +1,6 @@
 using UnityEngine;
 using Bolt;
-using BoltPlaymaker;
+using BoltPlayMakerUtils;
 using System;
 using System.Collections;
 using HutongGames.PlayMaker;

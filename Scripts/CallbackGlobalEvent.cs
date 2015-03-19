@@ -4,7 +4,7 @@ using BoltPlayMakerUtils;
 using HutongGames.PlayMaker;
 using System.Collections;
 
-namespace BoltPlaymaker
+namespace BoltPlayMakerUtils
 {
     /// <summary>
     /// This is a global event reciever for Network events, handled on each individual session.

@@ -4,7 +4,7 @@ using BoltPlayMakerUtils;
 using HutongGames.PlayMaker;
 using System.Collections;
 
-namespace BoltPlaymaker
+namespace BoltPlayMakerUtils
 {
     /// <summary>
     /// A generic Callback component.

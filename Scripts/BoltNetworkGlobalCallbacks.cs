@@ -8,7 +8,7 @@ using System.Collections;
 /// <summary>
 /// This is a global event reciever for Network events, handled on each individual session.
 /// </summary>
-namespace BoltPlaymaker
+namespace BoltPlayMakerUtils
 {
     [BoltGlobalBehaviour]
     public class BoltNetworkGlobalCallbacks : Bolt.GlobalEventListener

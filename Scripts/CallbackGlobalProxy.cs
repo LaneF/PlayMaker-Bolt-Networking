@@ -5,48 +5,40 @@ using HutongGames.PlayMaker;
 using System.Collections;
 
 
-namespace BoltPlaymaker
+namespace BoltPlayMakerUtils
 {
     /// <summary>
     /// This is a global event reciever for Network events, handled on each individual session.
     /// </summary>
-    [BoltGlobalBehaviour]
-    public class CallbackConnections : Bolt.GlobalEventListener
+    [BoltGlobalBehaviour] // this makes Bolt create an instance and maintain it. No need for a proxy object.
+    public class CallbackGlobalProxy : Bolt.GlobalEventListener
     {
-        public PlayMakerFSM targetFsm;
-        public string callEvent;
-        public FsmEventData eventData;
+        FsmEventTarget target = new FsmEventTarget();
+        FsmEventData data = new FsmEventData();
+        GameObject proxyGo;
+        PlayMakerFSM proxyFsm;
 
-        public void Setup(PlayMakerFSM target, string anEvent)
+        void Start() { Setup(); }
+
+        void Setup()
         {
-            targetFsm = target;
-            callEvent = anEvent;
+            // proxyGo = new GameObject("Bolt Global Callback Proxy");
+            // proxyGo.hideFlags = HideFlags.HideInHierarchy;
+            // proxyGo.AddComponent<PlayMakerFSM>();
+            gameObject.AddComponent<PlayMakerFSM>();
+            proxyFsm = gameObject.GetComponent<PlayMakerFSM>();
+
+            target.sendToChildren = true;
+            target.target = FsmEventTarget.EventTarget.BroadcastAll;
         }
 
-        public void Update()
-        {
-            if (targetFsm == null) { RemoveCallback(); } // callback should die if it has no target
-        }
-
-        public void RemoveCallback()
-        {
-            Destroy(this);
-        }
-
-        void OnDestroy()
-        {
-        }
-
+        #region Bolt Callbacks
         /// <summary>
         /// Callback triggered when the bolt simulation is shutting down.
         /// </summary>
         public override void BoltShutdown()
         {
-            PlayMakerUtils.SendEventToGameObject(targetFsm, targetFsm.gameObject, callEvent, null);
-
-            targetFsm.SendEvent(callEvent);
-            // alert that the server has collapsed...
-            BoltConsole.Write("BPM Warning: Server Shutting Down...");
+            BoltConsole.Write("BPM Warning: Bolt Shutting Down...");
         }
 
         /// <summary>
@@ -54,40 +46,44 @@ namespace BoltPlaymaker
         /// </summary>
         public override void BoltStarted()
         {
-            targetFsm.SendEvent(callEvent);
             // do some precalculation stuff with this...
             BoltConsole.Write("BPM Starting Game...");
         }
 
         public override void BoltStartFailed()
         {
-            targetFsm.SendEvent(callEvent);
             // (No API on this)...
             BoltConsole.Write("BPM Bolt Failed to Start...");
         }
 
         public override void BoltStartPending()
         {
-            targetFsm.SendEvent(callEvent);
             // (No API on this)...
             BoltConsole.Write("BPM BoltStartPending()");
         }
+        #endregion
 
+        #region Connection Callbacks
         /// <summary>
         /// Callback triggered when trying to connect to a remote endpoint
         /// </summary>
         /// <param name="endpoint"></param>
         public override void ConnectAttempt(UdpKit.UdpEndPoint endpoint)
         {
-            targetFsm.SendEvent(callEvent);
             BoltConsole.Write("BPM ConnectAttempt");
         }
 
         public override void Connected(BoltConnection connection, Bolt.IProtocolToken acceptToken, Bolt.IProtocolToken connectToken)
         {
-            targetFsm.SendEvent(callEvent);
-            // (No API on this)...
+            if (proxyGo == null) { Setup(); }
+
+            //data.StringData = (connection.RemoteEndPoint.Address + ":" + connection.RemoteEndPoint.Port);
+            FsmEvent callback = new FsmEvent("BOLT / CONNECTED");
+            // Fsm.EventData = data;
+            proxyFsm.Fsm.Event(target, callback);
+
             BoltConsole.Write("BPM Connected");
+            Debug.Log("BPM Invoked <color=red>Connected</color> Global Event.");
         }
 
         /// <summary>
@@ -96,8 +92,7 @@ namespace BoltPlaymaker
         /// <param name="endpoint"></param>
         public override void ConnectFailed(UdpKit.UdpEndPoint endpoint)
         {
-            targetFsm.SendEvent(callEvent);
-            BoltConsole.Write("BPM ConnectFailed");
+            BoltConsole.Write("BPM Connect Failed");
         }
 
         /// <summary>
@@ -107,8 +102,7 @@ namespace BoltPlaymaker
         /// <param name="token"></param>
         public override void ConnectRefused(UdpKit.UdpEndPoint endpoint, Bolt.IProtocolToken token)
         {
-            targetFsm.SendEvent(callEvent);
-            BoltConsole.Write("BPM ConnectRefused");
+            BoltConsole.Write("BPM Connect Refused");
         }
 
         /// <summary>
@@ -118,8 +112,7 @@ namespace BoltPlaymaker
         /// <param name="token"></param>
         public override void ConnectRequest(UdpKit.UdpEndPoint endpoint, Bolt.IProtocolToken token)
         {
-            targetFsm.SendEvent(callEvent);
-            BoltConsole.Write("BPM ConnectRequest");
+            BoltConsole.Write("BPM Connect Request");
         }
 
         /// <summary>
@@ -131,7 +124,9 @@ namespace BoltPlaymaker
         {
             BoltConsole.Write("BPM Disconnected");
         }
+        #endregion
 
+        #region Scene Callbacks
         /// <summary>
         /// Callback triggered when a remote connection has completely loaded the current scene
         /// </summary>
@@ -140,9 +135,24 @@ namespace BoltPlaymaker
         public override void SceneLoadRemoteDone(BoltConnection connection, Bolt.IProtocolToken token)
         {
             // (No API on this)...
-            BoltConsole.Write("BPM SceneLoadRemoteDone");
+            BoltConsole.Write("BPM Scene Load Remote Done");
         }
 
+        public override void SceneLoadLocalBegin(string scene, Bolt.IProtocolToken token)
+        {
+            // (No API on this)...
+            BoltConsole.Write("BPM Scene Load Local Begin");
+        }
+
+        public override void SceneLoadLocalDone(string scene, Bolt.IProtocolToken token)
+        {
+            // (No API on this)...
+            BoltConsole.Write("BPM Scene Load Local Done");
+        }
+
+        #endregion
+
+        #region Entity Callbacks
         /// <summary>
         /// Callback triggered when this instance of bolt receieves control of a bolt entity
         /// </summary>
@@ -150,7 +160,7 @@ namespace BoltPlaymaker
         /// <param name="token"></param>
         public override void ControlOfEntityGained(BoltEntity entity, Bolt.IProtocolToken token)
         {
-            BoltConsole.Write("BPM ControlOfEntityGained");
+            BoltConsole.Write("BPM Control Of Entity Gained");
         }
 
         /// <summary>
@@ -160,7 +170,7 @@ namespace BoltPlaymaker
         /// <param name="token"></param>
         public override void ControlOfEntityLost(BoltEntity entity, Bolt.IProtocolToken token)
         {
-            BoltConsole.Write("BPM ControlOfEntityLost");
+            BoltConsole.Write("BPM Control Of Entity Lost");
         }
 
         /// <summary>
@@ -170,7 +180,7 @@ namespace BoltPlaymaker
         /// <param name="token"></param>
         public override void EntityAttached(BoltEntity entity, Bolt.IProtocolToken token)
         {
-            BoltConsole.Write("BPM EntityAttached");
+            BoltConsole.Write("BPM Entity Attached");
         }
 
         /// <summary>
@@ -181,27 +191,15 @@ namespace BoltPlaymaker
         public override void EntityDetached(BoltEntity entity, Bolt.IProtocolToken token)
         {
             // (No API on this)...
-            BoltConsole.Write("BPM EntityDetached");
+            BoltConsole.Write("BPM Entity Detached");
         }
 
         public override void EntityReceived(BoltEntity entity)
         {
             // (No API on this)...
-            BoltConsole.Write("BPM EntityReceived");
+            BoltConsole.Write("BPM Entity Received");
         }
 
-        public override void SceneLoadLocalBegin(string scene, Bolt.IProtocolToken token)
-        {
-            // (No API on this)...
-            BoltConsole.Write("BPM SceneLoadLocalBegin");
-        }
-
-        public override void SceneLoadLocalDone(string scene, Bolt.IProtocolToken token)
-        {
-            // (No API on this)...
-            BoltConsole.Write("BPM SceneLoadLocalDone");
-        }
-
-
+        #endregion
     }
 }
