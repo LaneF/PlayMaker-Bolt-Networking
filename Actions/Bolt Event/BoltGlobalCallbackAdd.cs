@@ -101,7 +101,7 @@ namespace HutongGames.PlayMaker.Actions
         {
             if (entity != null) // if there is an entity, get the data from it.
             { 
-                _entity = Get.Entity(entity.Value); 
+                _entity = Get.Entity(entity.Value);
             }
         }
 
