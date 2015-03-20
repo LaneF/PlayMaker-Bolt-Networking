@@ -10,26 +10,28 @@ namespace BoltPlayMakerUtils
     /// <summary>
     /// This is a global event reciever for Network events, handled on each individual session.
     /// </summary>
-    [BoltGlobalBehaviour] // this makes Bolt create an instance and maintain it. No need for a proxy object.
+    [BoltGlobalBehaviour] // this creates an instance on Bolt and maintain it. No need for a proxy object.
     public class CallbackGlobalProxy : Bolt.GlobalEventListener
     {
-        FsmEventTarget target = new FsmEventTarget();
+        FsmEventTarget _eventTarget = new FsmEventTarget();
         FsmEventData data = new FsmEventData();
         GameObject proxyGo;
         PlayMakerFSM proxyFsm;
 
         void Start() { Setup(); }
-
         void Setup()
         {
-            // proxyGo = new GameObject("Bolt Global Callback Proxy");
-            // proxyGo.hideFlags = HideFlags.HideInHierarchy;
-            // proxyGo.AddComponent<PlayMakerFSM>();
-            gameObject.AddComponent<PlayMakerFSM>();
             proxyFsm = gameObject.GetComponent<PlayMakerFSM>();
 
-            target.sendToChildren = true;
-            target.target = FsmEventTarget.EventTarget.BroadcastAll;
+            if (proxyFsm == null)
+            {
+                gameObject.AddComponent<PlayMakerFSM>();
+                proxyFsm = gameObject.GetComponent<PlayMakerFSM>();
+            }
+
+            _eventTarget.target = FsmEventTarget.EventTarget.BroadcastAll;
+
+            Debug.Log("***Finished Setup for the Bolt Callback Global Proxy***");
         }
 
         #region Bolt Callbacks
@@ -79,8 +81,13 @@ namespace BoltPlayMakerUtils
 
             //data.StringData = (connection.RemoteEndPoint.Address + ":" + connection.RemoteEndPoint.Port);
             FsmEvent callback = new FsmEvent("BOLT / CONNECTED");
-            // Fsm.EventData = data;
-            proxyFsm.Fsm.Event(target, callback);
+
+            if (proxyFsm == null)
+            {
+                Debug.LogError("PROXY FSM WAS NULL");
+            }
+
+            proxyFsm.Fsm.Event(_eventTarget, callback);
 
             BoltConsole.Write("BPM Connected");
             Debug.Log("BPM Invoked <color=red>Connected</color> Global Event.");
