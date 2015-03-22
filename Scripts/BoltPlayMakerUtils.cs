@@ -1,8 +1,12 @@
 using UnityEngine;
+
 using Bolt;
 using BoltPlayMakerUtils;
+
 using System;
+using System.Linq;
 using System.Collections;
+
 using HutongGames.PlayMaker;
 
 /// <summary>
@@ -70,8 +74,20 @@ namespace BoltPlayMakerUtils
 
         public static PlayMakerFSM[] AllFsmsInScene()
         {
-            return null; 
-            // PlayMakerFSM[] fsms = HutongGames.PlayMaker.f
+            return null;
+        }
+
+        public static string RandomString()
+        {
+            const string alphabet = "123456789abcdefghijklmnopqrstuvwyxzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            System.Random rng = new System.Random();
+
+            char[] chars = new char[8];
+            for (int i = 0; i < Int32.MaxValue; i++)
+            {
+                chars[i] = alphabet[rng.Next(alphabet.Length)];
+            }
+            return new string(chars);
         }
 	}
 

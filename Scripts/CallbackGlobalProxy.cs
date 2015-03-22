@@ -3,6 +3,7 @@ using Bolt;
 using BoltPlayMakerUtils;
 using HutongGames.PlayMaker;
 using System.Collections;
+using System.Collections.Generic;
 
 
 namespace BoltPlayMakerUtils
@@ -13,14 +14,20 @@ namespace BoltPlayMakerUtils
     [BoltGlobalBehaviour] // this creates an instance on Bolt and maintain it. No need for a proxy object.
     public class CallbackGlobalProxy : Bolt.GlobalEventListener
     {
+        
+        // WHEN ADDING CALLBACKS, MAKE SURE THEY ARE ALSO IN THE MENUS.CS FILE SO THAT THEY APPEAR AS AN EVENT FOR THE USER.
+
         FsmEventTarget _eventTarget = new FsmEventTarget();
-        FsmEventData data = new FsmEventData();
         GameObject proxyGo;
         PlayMakerFSM proxyFsm;
+
+        static public Dictionary<string, object> GlobalCallbackEventData = new Dictionary<string, object>();
 
         void Start() { Setup(); }
         void Setup()
         {
+            Debug.Log("Proxy FSM for Global events was null, reinitiating Setup()...");
+
             proxyFsm = gameObject.GetComponent<PlayMakerFSM>();
 
             if (proxyFsm == null)
@@ -30,183 +37,290 @@ namespace BoltPlayMakerUtils
             }
 
             _eventTarget.target = FsmEventTarget.EventTarget.BroadcastAll;
-
             Debug.Log("***Finished Setup for the Bolt Callback Global Proxy***");
         }
 
-        #region Bolt Callbacks
-        /// <summary>
-        /// Callback triggered when the bolt simulation is shutting down.
-        /// </summary>
-        public override void BoltShutdown()
+        #region Dictionary Modifiers
+        void PassDataOfConnection(BoltConnection connection)
         {
-            BoltConsole.Write("BPM Warning: Bolt Shutting Down...");
+            GlobalCallbackEventData.Add("BitsPerSecondIn", connection.BitsPerSecondIn);
+            GlobalCallbackEventData.Add("BitsPerSecondOut", connection.BitsPerSecondOut);
+            GlobalCallbackEventData.Add("ConnectionId", connection.ConnectionId);
+            GlobalCallbackEventData.Add("DeJitterFrames", connection.DejitterFrames);
+            GlobalCallbackEventData.Add("IsLoadingMap", connection.IsLoadingMap);
+            GlobalCallbackEventData.Add("PingAliased", connection.PingAliased);
+            GlobalCallbackEventData.Add("PingNetwork", connection.PingNetwork);
+            GlobalCallbackEventData.Add("Address", connection.RemoteEndPoint.Address.ToString());
+            GlobalCallbackEventData.Add("Port", connection.RemoteEndPoint.Port);
+            GlobalCallbackEventData.Add("RemoteFrame", connection.RemoteFrame);
         }
 
-        /// <summary>
-        /// Callback triggered when the bolt simulation is starting.
-        /// </summary>
-        public override void BoltStarted()
+        void PassDataOfEndPoint(UdpKit.UdpEndPoint endpoint)
         {
-            // do some precalculation stuff with this...
-            BoltConsole.Write("BPM Starting Game...");
+            GlobalCallbackEventData.Add("EndPointAddress", endpoint.Address.ToString());
+            GlobalCallbackEventData.Add("EndPointPort", endpoint.Port);
         }
 
-        public override void BoltStartFailed()
+        void PassDataOfEntity(BoltEntity entity)
         {
-            // (No API on this)...
-            BoltConsole.Write("BPM Bolt Failed to Start...");
-        }
-
-        public override void BoltStartPending()
-        {
-            // (No API on this)...
-            BoltConsole.Write("BPM BoltStartPending()");
+            GlobalCallbackEventData.Add("EntityGameObject", entity.gameObject);
+            GlobalCallbackEventData.Add("HasControl", entity.hasControl);
+            GlobalCallbackEventData.Add("HasControlWithPrediction", entity.hasControlWithPrediction);
         }
         #endregion
 
         #region Connection Callbacks
-        /// <summary>
-        /// Callback triggered when trying to connect to a remote endpoint
-        /// </summary>
-        /// <param name="endpoint"></param>
         public override void ConnectAttempt(UdpKit.UdpEndPoint endpoint)
         {
-            BoltConsole.Write("BPM ConnectAttempt");
-        }
-
-        public override void Connected(BoltConnection connection, Bolt.IProtocolToken acceptToken, Bolt.IProtocolToken connectToken)
-        {
-            if (proxyGo == null) { Setup(); }
-
-            //data.StringData = (connection.RemoteEndPoint.Address + ":" + connection.RemoteEndPoint.Port);
-            FsmEvent callback = new FsmEvent("BOLT / CONNECTED");
-
             if (proxyFsm == null)
             {
-                Debug.LogError("PROXY FSM WAS NULL");
+                Setup();
             }
 
-            proxyFsm.Fsm.Event(_eventTarget, callback);
+            GlobalCallbackEventData.Clear();
+            PassDataOfEndPoint(endpoint);
 
-            BoltConsole.Write("BPM Connected");
-            Debug.Log("BPM Invoked <color=red>Connected</color> Global Event.");
+
+            proxyFsm.Fsm.Event(_eventTarget, "BOLT / CONNECT ATTEMPT");
+            BoltConsole.Write("BP Connect Attempt on " + endpoint.Address + ":" + endpoint.Port);
         }
+        
+        public override void Connected(BoltConnection connection, Bolt.IProtocolToken acceptToken, Bolt.IProtocolToken connectToken)
+        {
+            if (proxyFsm == null) 
+            {
+                Setup();
+            }
 
-        /// <summary>
-        /// Callback triggered when a connection to remote server has failed
-        /// </summary>
-        /// <param name="endpoint"></param>
+            GlobalCallbackEventData.Clear();
+            PassDataOfConnection(connection);
+
+            proxyFsm.Fsm.Event(_eventTarget, "BOLT / CONNECTED");
+            BoltConsole.Write("BP Connected on " + connection.RemoteEndPoint.Address + ":" + connection.RemoteEndPoint.Port);
+        }
+        
         public override void ConnectFailed(UdpKit.UdpEndPoint endpoint)
         {
-            BoltConsole.Write("BPM Connect Failed");
+            if (proxyFsm == null)
+            {
+                Setup();
+            }
+
+            GlobalCallbackEventData.Clear();
+            PassDataOfEndPoint(endpoint);
+
+            proxyFsm.Fsm.Event(_eventTarget, "BOLT / CONNECT FAILED");
+            BoltConsole.Write("BP Connect Failed on " + endpoint.Address + ":" + endpoint.Port);
         }
 
-        /// <summary>
-        /// Callback triggered when the connection to a remote server has been refused.
-        /// </summary>
-        /// <param name="endpoint"></param>
-        /// <param name="token"></param>
         public override void ConnectRefused(UdpKit.UdpEndPoint endpoint, Bolt.IProtocolToken token)
         {
-            BoltConsole.Write("BPM Connect Refused");
+            if (proxyFsm == null)
+            {
+                Setup();
+            }
+
+            GlobalCallbackEventData.Clear();
+            PassDataOfEndPoint(endpoint);
+
+            proxyFsm.Fsm.Event(_eventTarget, "BOLT / CONNECT REFUSED");
+            BoltConsole.Write("BP Connect Refused on " + endpoint.Address + ":" + endpoint.Port);
         }
 
-        /// <summary>
-        /// Callback triggered when this instance receives an incoming client connection
-        /// </summary>
-        /// <param name="endpoint"></param>
-        /// <param name="token"></param>
         public override void ConnectRequest(UdpKit.UdpEndPoint endpoint, Bolt.IProtocolToken token)
         {
-            BoltConsole.Write("BPM Connect Request");
+            if (proxyFsm == null)
+            {
+                Setup();
+            }
+
+            GlobalCallbackEventData.Clear();
+            PassDataOfEndPoint(endpoint);
+
+            proxyFsm.Fsm.Event(_eventTarget, "BOLT / CONNECT REQUEST");
+            BoltConsole.Write("BPM Connect Request on " + endpoint.Address + ":" + endpoint.Port);
         }
 
-        /// <summary>
-        /// Callback triggered when disconnected from remote server
-        /// </summary>
-        /// <param name="connection"></param>
-        /// <param name="token"></param>
         public override void Disconnected(BoltConnection connection, Bolt.IProtocolToken token)
         {
-            BoltConsole.Write("BPM Disconnected");
+            if (proxyFsm == null)
+            {
+                Setup();
+            }
+
+            GlobalCallbackEventData.Clear();
+            PassDataOfConnection(connection);
+
+            proxyFsm.Fsm.Event(_eventTarget, "BOLT / DISCONNECTED");
+            BoltConsole.Write("BP Disconnected on " + connection.RemoteEndPoint.Address + ":" + connection.RemoteEndPoint.Port);
         }
         #endregion
 
         #region Scene Callbacks
-        /// <summary>
-        /// Callback triggered when a remote connection has completely loaded the current scene
-        /// </summary>
-        /// <param name="connection"></param>
-        /// <param name="token"></param>
         public override void SceneLoadRemoteDone(BoltConnection connection, Bolt.IProtocolToken token)
         {
-            // (No API on this)...
-            BoltConsole.Write("BPM Scene Load Remote Done");
+            if (proxyFsm == null)
+            {
+                Setup();
+            }
+
+            GlobalCallbackEventData.Clear();
+            PassDataOfConnection(connection);
+
+            proxyFsm.Fsm.Event(_eventTarget, "BOLT / SCENE LOAD REMOTE DONE");
+            BoltConsole.Write("BP Scene Load Remote Done" + connection.RemoteEndPoint.Address + ":" + connection.RemoteEndPoint.Port);
         }
 
         public override void SceneLoadLocalBegin(string scene, Bolt.IProtocolToken token)
         {
-            // (No API on this)...
-            BoltConsole.Write("BPM Scene Load Local Begin");
+            if (proxyFsm == null)
+            {
+                Setup();
+            }
+
+            GlobalCallbackEventData.Clear();
+            GlobalCallbackEventData.Add("Scene", scene);
+
+            proxyFsm.Fsm.Event(_eventTarget, "BOLT / SCENE LOAD LOCAL BEGIN");
+            BoltConsole.Write("BP Scene Load Local Begin... Scene: " + scene);
+
         }
 
         public override void SceneLoadLocalDone(string scene, Bolt.IProtocolToken token)
         {
-            // (No API on this)...
-            BoltConsole.Write("BPM Scene Load Local Done");
+            if (proxyFsm == null)
+            {
+                Setup();
+            }
+
+            GlobalCallbackEventData.Clear();
+            GlobalCallbackEventData.Add("Scene", scene);
+
+            proxyFsm.Fsm.Event(_eventTarget, "BOLT / SCENE LOAD LOCAL DONE");
+            BoltConsole.Write("BP Scene Load Local Done... Scene: " + scene);
         }
 
         #endregion
 
         #region Entity Callbacks
-        /// <summary>
-        /// Callback triggered when this instance of bolt receieves control of a bolt entity
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="token"></param>
         public override void ControlOfEntityGained(BoltEntity entity, Bolt.IProtocolToken token)
         {
-            BoltConsole.Write("BPM Control Of Entity Gained");
+            if (proxyFsm == null)
+            {
+                Setup();
+            }
+
+            GlobalCallbackEventData.Clear();
+            PassDataOfEntity(entity);
+
+            proxyFsm.Fsm.Event(_eventTarget, "BOLT / CONTROL OF ENTITY GAINED");
+            BoltConsole.Write("BP Control Of Entity Gained: " + entity.name);
         }
 
-        /// <summary>
-        /// Callback triggered when this instance of bolt loses control of a bolt entity
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="token"></param>
         public override void ControlOfEntityLost(BoltEntity entity, Bolt.IProtocolToken token)
         {
-            BoltConsole.Write("BPM Control Of Entity Lost");
+            if (proxyFsm == null)
+            {
+                Setup();
+            }
+
+            GlobalCallbackEventData.Clear();
+            PassDataOfEntity(entity);
+
+            proxyFsm.Fsm.Event(_eventTarget, "BOLT / CONTROL OF ENTITY LOST");
+            BoltConsole.Write("BP Control Of Entity Lost: " + entity.name);
         }
 
-        /// <summary>
-        /// Callback triggered when a new entity is attached to the bolt simulation
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="token"></param>
         public override void EntityAttached(BoltEntity entity, Bolt.IProtocolToken token)
         {
-            BoltConsole.Write("BPM Entity Attached");
+            if (proxyFsm == null)
+            {
+                Setup();
+            }
+
+            GlobalCallbackEventData.Clear();
+            PassDataOfEntity(entity);
+
+            proxyFsm.Fsm.Event(_eventTarget, "BOLT / ENTITY ATTACHED");
+            BoltConsole.Write("BP Entity Attached: " + entity.name);
         }
 
-        /// <summary>
-        /// Callback triggered when a new entity is detached from the bolt simulation
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="token"></param>
         public override void EntityDetached(BoltEntity entity, Bolt.IProtocolToken token)
         {
-            // (No API on this)...
-            BoltConsole.Write("BPM Entity Detached");
+            if (proxyFsm == null)
+            {
+                Setup();
+            }
+
+            GlobalCallbackEventData.Clear();
+            PassDataOfEntity(entity);
+
+            proxyFsm.Fsm.Event(_eventTarget, "BOLT / ENTITY DETACHED");
+            BoltConsole.Write("BP Entity Detached: " + entity.name);
         }
 
         public override void EntityReceived(BoltEntity entity)
         {
-            // (No API on this)...
-            BoltConsole.Write("BPM Entity Received");
+            if (proxyFsm == null)
+            {
+                Setup();
+            }
+
+            GlobalCallbackEventData.Clear();
+            PassDataOfEntity(entity);
+
+            proxyFsm.Fsm.Event(_eventTarget, "BOLT / ENTITY RECEIVED");
+            BoltConsole.Write("BP Entity Received: " + entity.name);
         }
 
+        #endregion        
+        
+        #region Bolt Callbacks
+        public override void BoltShutdown()
+        {
+            if (proxyFsm == null)
+            {
+                Setup();
+            }
+
+            proxyFsm.Fsm.Event(_eventTarget, "BOLT / BOLT SHUTDOWN");
+            BoltConsole.Write("BP Bolt Shutdown");
+        }
+
+        public override void BoltStarted()
+        {
+            if (proxyFsm == null)
+            {
+                Setup();
+            }
+
+            proxyFsm.Fsm.Event(_eventTarget, "BOLT / BOLT STARTED");
+            BoltConsole.Write("BP Bolt Started");
+        }
+
+        public override void BoltStartFailed()
+        {
+            if (proxyFsm == null)
+            {
+                Setup();
+            }
+
+            proxyFsm.Fsm.Event(_eventTarget, "BOLT / BOLT START FAILED");
+            BoltConsole.Write("BP Bolt Start Failed");
+        }
+
+        public override void BoltStartPending()
+        {
+            if (proxyFsm == null)
+            {
+                Setup();
+            }
+
+            proxyFsm.Fsm.Event(_eventTarget, "BOLT / BOLT START PENDING");
+            BoltConsole.Write("BP Bolt Start Pending");
+        }
         #endregion
+
+
     }
 }

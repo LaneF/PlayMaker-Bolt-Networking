@@ -9,6 +9,7 @@ using System.Reflection;
 
 namespace HutongGames.PlayMaker.Actions
 {
+    // INCOMPLETE!!!
     [ActionCategory("Bolt Networking")]
     [Tooltip("Send a Bolt Event on the Network.")]
     public class BoltEventSend : FsmStateAction

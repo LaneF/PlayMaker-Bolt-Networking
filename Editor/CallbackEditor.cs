@@ -6,98 +6,106 @@ using System.Collections;
 
 namespace HutongGames.PlayMakerEditor
 {
-    [CustomActionEditor(typeof(BoltGlobalCallbackAdd))]
+    [CustomActionEditor(typeof(BoltGlobalCallbackGetData))]
     public class CallbackEditor : CustomActionEditor
     {
-        BoltGlobalCallbackAdd Action;
+        BoltGlobalCallbackGetData Action;
 
         public void RevealBase()
         {
             EditField("callback");
-            EditField("callBackTarget");
-            EditField("thisStateEvent");
-            EditField("eventName");
         }
 
-        public void HasUdp(){
+        public void HasEndPoint(){
             RevealBase();
-            EditField("endPointIp");
+            EditField("endPointAddress");
             EditField("endPointPort");
         }
 
         public void HasBoltConnection(){
             RevealBase();
             EditField("connectionId");
+            EditField("bitsPerSecondIn");
+            EditField("bitsPerSecondOut");
+            EditField("dejitterFrames");
+            EditField("isLoadingMap");
+            EditField("pingAliased");
+            EditField("pingNetwork");
+            EditField("address");
+            EditField("port");
+            EditField("remoteFrame");
         }
 
         public void HasBoltEntity(){
             RevealBase();
             EditField("entity");
+            EditField("hasControl");
+            EditField("hasControlWithPrediction");
         }
 
         public void HasString(){
             RevealBase();
-            EditField("text");
+            EditField("scene");
         }
 
         public override bool OnGUI()
         {
-            Action = target as BoltGlobalCallbackAdd;
+            Action = target as BoltGlobalCallbackGetData;
 
             switch (Action.callback)
             {
-                case BoltGlobalCallbackAdd.CallbackType.Connected:
+                case BoltGlobalCallbackGetData.CallbackType.Connected:
                     HasBoltConnection();
                     break;
-                case BoltGlobalCallbackAdd.CallbackType.ConnectAttempt:
-                    HasUdp();
+                case BoltGlobalCallbackGetData.CallbackType.ConnectAttempt:
+                    HasEndPoint();
                     break;
-                case BoltGlobalCallbackAdd.CallbackType.ConnectFailed:
-                    HasUdp();
+                case BoltGlobalCallbackGetData.CallbackType.ConnectFailed:
+                    HasEndPoint();
                     break;
-                case BoltGlobalCallbackAdd.CallbackType.ConnectRefused:
-                    HasUdp();
+                case BoltGlobalCallbackGetData.CallbackType.ConnectRefused:
+                    HasEndPoint();
                     break;
-                case BoltGlobalCallbackAdd.CallbackType.ConnectRequest:
-                    HasUdp();
+                case BoltGlobalCallbackGetData.CallbackType.ConnectRequest:
+                    HasEndPoint();
                     break;
-                case BoltGlobalCallbackAdd.CallbackType.Disconnected:
+                case BoltGlobalCallbackGetData.CallbackType.Disconnected:
                     HasBoltConnection();
                     break;
-                case BoltGlobalCallbackAdd.CallbackType.ControlOfEntityGained:
+                case BoltGlobalCallbackGetData.CallbackType.ControlOfEntityGained:
                     HasBoltEntity();
                     break;
-                case BoltGlobalCallbackAdd.CallbackType.ControlOfEntityLost:
+                case BoltGlobalCallbackGetData.CallbackType.ControlOfEntityLost:
                     HasBoltEntity();
                     break;
-                case BoltGlobalCallbackAdd.CallbackType.EntityAttached:
+                case BoltGlobalCallbackGetData.CallbackType.EntityAttached:
                     HasBoltEntity();
                     break;
-                case BoltGlobalCallbackAdd.CallbackType.EntityDetached:
+                case BoltGlobalCallbackGetData.CallbackType.EntityDetached:
                     HasBoltEntity();
                     break;
-                case BoltGlobalCallbackAdd.CallbackType.EntityReceived:
+                case BoltGlobalCallbackGetData.CallbackType.EntityReceived:
                     HasBoltEntity();
                     break;
-                case BoltGlobalCallbackAdd.CallbackType.BoltShutdown:
+                case BoltGlobalCallbackGetData.CallbackType.BoltShutdown:
                     RevealBase(); // this callback has no arguments
                     break;
-                case BoltGlobalCallbackAdd.CallbackType.BoltStarted:
+                case BoltGlobalCallbackGetData.CallbackType.BoltStarted:
                     RevealBase(); // this callback has no arguments
                     break;
-                case BoltGlobalCallbackAdd.CallbackType.BoltStartFailed:
+                case BoltGlobalCallbackGetData.CallbackType.BoltStartFailed:
                     RevealBase(); // this callback has no arguments
                     break;
-                case BoltGlobalCallbackAdd.CallbackType.BoltStartPending:
+                case BoltGlobalCallbackGetData.CallbackType.BoltStartPending:
                     RevealBase(); // this callback has no arguments
                     break;
-                case BoltGlobalCallbackAdd.CallbackType.SceneLoadRemoteDone:
+                case BoltGlobalCallbackGetData.CallbackType.SceneLoadRemoteDone:
                     HasBoltConnection();
                     break;
-                case BoltGlobalCallbackAdd.CallbackType.SceneLoadLocalBegin:
+                case BoltGlobalCallbackGetData.CallbackType.SceneLoadLocalBegin:
                     HasString();
                     break;
-                case BoltGlobalCallbackAdd.CallbackType.SceneLoadLocalDone:
+                case BoltGlobalCallbackGetData.CallbackType.SceneLoadLocalDone:
                     HasString();
                     break;
             }

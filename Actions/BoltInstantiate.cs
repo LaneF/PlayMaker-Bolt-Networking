@@ -6,10 +6,11 @@ using BoltPlayMakerUtils;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory("Bolt Networking")]
-	[Tooltip("Instantiate a Bolt Prefab.")]
+    [Tooltip("Instantiate a Bolt Prefab. NOTE: Remember to assign the State and Compile Bolt!")]
 	public class BoltInstantiate : FsmStateAction
 	{
-		[Tooltip("Choose a Prefab from the Project Hierarchy.")]
+		[Tooltip("Choose a Prefab from the Project Hierarchy.\n" +
+            "NOTE: Remember to assign the State and Compile Bolt!")]
 		public FsmGameObject prefab;
 
 		// TODO Add option for instantiation by PrefabId.
@@ -57,11 +58,13 @@ namespace HutongGames.PlayMaker.Actions
 
 		public override void OnEnter()
 		{
-			var go = prefab.Value;
+			GameObject go = prefab.Value;
+            Debug.Log("INSTANTIATING GAMEOBJECT: " + go);
 
-			if (go != null)
-			{
-				var spawnPosition = Vector3.zero;
+            if (go != null)
+            {
+                #region Transform figuring...
+                var spawnPosition = Vector3.zero;
 				var spawnRotation = Vector3.zero;
 				
 				if (spawnPoint.Value != null)
@@ -87,7 +90,8 @@ namespace HutongGames.PlayMaker.Actions
 					{
 						spawnRotation = rotation.Value;
 					}
-				}
+                }
+            #endregion
 
                 BoltEntity entity = BoltNetwork.Instantiate(go, spawnPosition, Quaternion.Euler(spawnRotation));
 				storeGameObject.Value = entity.gameObject;
@@ -101,7 +105,7 @@ namespace HutongGames.PlayMaker.Actions
 				// Invoke SetTransforms() when the entity is Attached()
 				if (setTransforms.Value)
 				{
-                    BoltEntityPlaymakerProxy _b = prefab.Value.GetComponent<BoltEntityPlaymakerProxy>();
+                    BoltEntityPlaymakerProxy _b = entity.gameObject.GetComponent<BoltEntityPlaymakerProxy>();
 					_b.transformName = transformPropertyName.Value;
 					_b.setTransforms = true;
 				}
