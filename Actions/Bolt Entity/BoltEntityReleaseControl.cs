@@ -6,8 +6,8 @@ using BoltPlayMakerUtils;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory("Bolt Networking")]
-	[Tooltip("Take control of a Bolt Entity.")]
-	public class BoltEntityTakeControl : FsmStateAction
+	[Tooltip("Release control of a Bolt Entity.")]
+	public class BoltEntityReleaseControl : FsmStateAction
 	{
 		[RequiredField]
 		[Tooltip("The target GameObject.")]
@@ -24,7 +24,7 @@ namespace HutongGames.PlayMaker.Actions
 
 			if (go != null)
 			{
-				Get.Entity(go).TakeControl();
+				Get.Entity(go).ReleaseControl();
 			}
 
 			Finish ();

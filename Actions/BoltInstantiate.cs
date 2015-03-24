@@ -11,9 +11,11 @@ namespace HutongGames.PlayMaker.Actions
 	{
 		[Tooltip("Choose a Prefab from the Project Hierarchy.\n" +
             "NOTE: Remember to assign the State and Compile Bolt!")]
+        [CheckForComponent(typeof(BoltEntity))]
 		public FsmGameObject prefab;
 
-		// TODO Add option for instantiation by PrefabId.
+        [Tooltip("Optionally spawn the Entity by Prefab Id. 'Prefab' GameObject slot must be empty.")]
+        public FsmInt prefabId;
 
 		[Tooltip("Optional Spawn Point.")]
 		public FsmGameObject spawnPoint;
@@ -45,6 +47,7 @@ namespace HutongGames.PlayMaker.Actions
 		public override void Reset()
 		{
 			prefab = null;
+            prefabId = null;
 			spawnPoint = null;
 			position = new FsmVector3 { UseVariable = true };
 			rotation = new FsmVector3 { UseVariable = true };
@@ -58,8 +61,20 @@ namespace HutongGames.PlayMaker.Actions
 
 		public override void OnEnter()
 		{
-			GameObject go = prefab.Value;
-            Debug.Log("INSTANTIATING GAMEOBJECT: " + go);
+			GameObject go = new GameObject();
+
+            if (prefabId == null)
+            {
+                go = prefab.Value;
+            }
+            
+            else
+            {
+                Bolt.PrefabId id = new Bolt.PrefabId();
+                id.Value = prefabId.Value;
+
+                go = Bolt.PrefabDatabase.Find(id);
+            }
 
             if (go != null)
             {
