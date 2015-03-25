@@ -8,7 +8,7 @@ namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory("Bolt Networking")]
 	[Tooltip("Load a Level through Bolt, all clients will comply.")]
-	public class BoltLoadLevel : FsmStateAction
+	public class BoltServerLoadLevel : FsmStateAction
 	{
         [RequiredField]
         [Tooltip("The name of the scene. Make sure it is in the build list.")]

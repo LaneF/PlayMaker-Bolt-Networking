@@ -41,7 +41,10 @@ namespace BoltPlayMakerUtils
 
         void OnDestroy()
         {
-            state.RemoveCallback(propertyName, DoCallback);
+            if (BoltNetwork.isRunning)
+            {
+                state.RemoveCallback(propertyName, DoCallback);
+            }
         }
     }
 }

@@ -8,7 +8,7 @@ namespace HutongGames.PlayMaker.Actions
 {
     [ActionCategory("Bolt Networking")]
     [Tooltip("Remove a Callback on a GameObject.")]
-    public class BoltEntityPropertyRemoveCallback : FsmStateAction
+    public class BoltStatePropertyRemoveCallback : FsmStateAction
     {
         [RequiredField]
         [Tooltip("The GameObject with the active Callback.")]

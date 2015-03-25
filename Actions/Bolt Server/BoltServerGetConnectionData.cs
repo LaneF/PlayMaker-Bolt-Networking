@@ -12,7 +12,7 @@ namespace HutongGames.PlayMaker.Actions
     // INCOMPLETE!!!
 	[ActionCategory("Bolt Networking")]
 	[Tooltip("Get properties of a Connection")]
-	public class BoltGetConnectionProperties : FsmStateAction
+	public class BoltServerGetConnectionData : FsmStateAction
 	{
         [ActionSection("   Connection Reference")]
 

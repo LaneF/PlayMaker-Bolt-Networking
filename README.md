@@ -11,26 +11,25 @@ Requirements
 - Playmaker 1.8 (1.7.x will work, but the examples are done with 1.8).
 - PlaymakerUtils git rep
 
-
-
 ========
-Scripts
+Support Scripts
 ========
 
-- Bolt Entity PlayMaker Proxy
-... For initialization of Bolt Entity components. More features TBD.
+- Bolt Entity Playmaker Proxy "Proxy and Initialization script for all Bolt Entities."
+- Bolt PlayMaker Utils "Scripting shortcuts and helper classes."
+- CallbackEvent "A script for a custom Callback on an Entity."
+- CallbackGlobalProxy "A static class for proxying Bolt Global Callbacks as Broadcasted FsmEvents."
+- TooltipAttribute "Inspector tooltips."
 
-- Bolt PlayMaker Utils
-... This is where class shortcuts are made.
+========
+Editor Scripts
+========
 
-- BPCallback
-... This is for generic State Property callbacks. Added at runtime.
-
-- BPProjectHelper
-... This script is not implemented. Vague code for accessing property lists through the compiler.
-
-- TooltipAttribute
-... This is for showing Inspector Tooltips in the Editor. I hate editor code.
+- BPEditorUtils "Custom Action Editor support scipt. Accesses Bolt.Compiler for static data. "
+- CallbackEditor "Custom Action Editor for *Bolt Global Callback Get Data*. "
+- EventSendEditor "Custom Action Editor for *Bolt Event Send*. "
+- Menus "Menu buttons for the Unity Editor.. "
+- TooltipDrawer "Draws the tooltips for Inspector scripts. "
 
 ========
 Entity Actions
@@ -40,6 +39,7 @@ Entity Actions
 - Bolt Entity Get Property
 - Bolt Entity Has Control
 - Bolt Entity Take Control
+- Bolt Entity Release Control
 
 ========
 Basic API Actions
@@ -48,15 +48,19 @@ Basic API Actions
 - Bolt Instantiate
 - Bolt Is Client
 - Bolt Is Server
+- Bolt Load Level
+- Bolt Server Get Client Count
+- Bolt Server Get Connection Data
 - Bolt Start Client
 - Bolt Start Server
-- Bolt Load Level
 - ...
 
 ========
 States
 ========
 
+- Bolt State Property Add Callback
+- Bolt State Property Remove Callback
 - // Get
 - Bolt State Get Bool
 - Bolt State Get Color
@@ -81,6 +85,16 @@ States
 - Bolt State Set Vector3
 - ...
 
+========
+Events
+========
+
+- Bolt Event Send
+- Bolt Event Send By Name
+- Bolt Global Callback Get Data
+- Bolt Global Event Listener
+- ...
+
 
 ========
 Objects
@@ -94,8 +108,4 @@ Commands
 
 - ...
 
-========
-Events
-========
 
-- ...

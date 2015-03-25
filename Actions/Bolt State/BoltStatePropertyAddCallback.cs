@@ -8,7 +8,7 @@ namespace HutongGames.PlayMaker.Actions
 {
     [ActionCategory("Bolt Networking")]
     [Tooltip("Fire an event on this FSM when a Property changes.")]
-    public class BoltEntityPropertyAddCallback : FsmStateAction
+    public class BoltStatePropertyAddCallback : FsmStateAction
     {
         [ActionSection("   Property Options")]
 
