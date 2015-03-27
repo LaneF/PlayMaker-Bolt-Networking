@@ -3,6 +3,7 @@
 using UnityEngine;
 using BoltPlayMakerUtils;
 using Bolt;
+using UdpKit;
 using System;
 using System.Collections;
 using System.Reflection;
@@ -15,35 +16,36 @@ namespace HutongGames.PlayMaker.Actions
     public class BoltEventSend : FsmStateAction
     {
         public string[] targetList;
-
         public int selectionId = 0;
 
-        [CompoundArray("Properties", "name", "fsm variable")]
-        public string[] propNames;
-        public FsmVar[] propVariables;
+        [HideTypeFilter]
+        [UIHint(UIHint.Variable)]
+        public FsmVar[] vars;
 
-        private object[] _arguments;
+        private object[] _arguments; // must be filled by editor script
 
         public override void OnEnter()
         {
-            // TODO fill _arguments with current propVariables
-            // or propVariables directly to the Invoke, but probably wont work.
             CreateEvent();
         }
         
         public void CreateEvent()
         {
+            // use reflection to fire Event.Create and Event.Send
             Type Event = Type.GetType(targetList[selectionId]);
-
             ConstructorInfo eventConstructor = Event.GetConstructor(Type.EmptyTypes);
-
             object EventObject = eventConstructor.Invoke(new object[]{});
 
-
-
             MethodInfo Event_Create = Event.GetMethod("Create");
+            Event_Create.Invoke(EventObject, null);
+            
 
-            Event_Create.Invoke(EventObject, _arguments);
+            // fill the event arguments here...
+
+
+
+            MethodInfo Event_Send = Event.GetMethod("Send");
+            Event_Send.Invoke(EventObject, null);
         }
     }
 }
