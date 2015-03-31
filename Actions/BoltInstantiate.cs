@@ -14,8 +14,8 @@ namespace HutongGames.PlayMaker.Actions
         [CheckForComponent(typeof(BoltEntity))]
 		public FsmGameObject prefab;
 
-        [Tooltip("Optionally spawn the Entity by Prefab Id. Use zero to ignore.")]
-        public FsmInt prefabId;
+        //[Tooltip("Optionally spawn the Entity by Prefab Id. Use zero to ignore.")]
+        //public FsmInt prefabId;
 
 		[Tooltip("Optional Spawn Point.")]
 		public FsmGameObject spawnPoint;
@@ -47,7 +47,7 @@ namespace HutongGames.PlayMaker.Actions
 		public override void Reset()
 		{
 			prefab = null;
-            prefabId = 0;
+            // prefabId = 0;
 			spawnPoint = null;
 			position = new FsmVector3 { UseVariable = true };
 			rotation = new FsmVector3 { UseVariable = true };
@@ -63,7 +63,9 @@ namespace HutongGames.PlayMaker.Actions
 		{
 			GameObject go = new GameObject();
             bool usingId = false;
+            go = prefab.Value; 
 
+            /*
             if (prefabId.Value == 0) // use the prefab slot if the prefab number is zero.
             {
                 go = prefab.Value; 
@@ -87,6 +89,7 @@ namespace HutongGames.PlayMaker.Actions
                     Debug.LogError("PrefabId returned no prefab! Check that the PrefabId exists and that Bolt is compiled.");
                 }
             }
+             * */
 
             if (go != null && !usingId)
             {

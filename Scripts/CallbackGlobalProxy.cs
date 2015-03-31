@@ -14,7 +14,6 @@ namespace BoltPlayMakerUtils
     [BoltGlobalBehaviour] // this creates an instance on Bolt and maintain it. No need for a proxy object.
     public class CallbackGlobalProxy : Bolt.GlobalEventListener
     {
-        
         // WHEN ADDING CALLBACKS, MAKE SURE THEY ARE ALSO IN THE MENUS.CS FILE SO THAT THEY APPEAR AS AN EVENT FOR THE USER.
 
         FsmEventTarget _eventTarget = new FsmEventTarget();
@@ -321,6 +320,9 @@ namespace BoltPlayMakerUtils
         }
         #endregion
 
-
+        public static void BroadcastCustomEvent(string name)
+        {
+            // proxyFsm.Fsm.Event(_eventTarget, name);
+        }
     }
 }

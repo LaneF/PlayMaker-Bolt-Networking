@@ -9,7 +9,7 @@ namespace BoltPlayMakerUtils
     /// <summary>
     /// A generic Callback component.
     /// </summary>
-    public class CallbackEvent : Bolt.EntityBehaviour<IState>
+    public class CallbackEventOnState : Bolt.EntityBehaviour<IState>
     {
         public string propertyName;
         public PlayMakerFSM returnTarget;

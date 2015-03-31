@@ -10,7 +10,6 @@ using System.Reflection;
 
 namespace HutongGames.PlayMaker.Actions
 {
-    // INCOMPLETE!!!
     [ActionCategory("Bolt Networking")]
     [Tooltip("Send a Bolt Event on the Network.")]
     public class BoltEventSend : FsmStateAction
@@ -18,11 +17,22 @@ namespace HutongGames.PlayMaker.Actions
         public string[] targetList;
         public int selectionId = 0;
 
-        [HideTypeFilter]
-        [UIHint(UIHint.Variable)]
-        public FsmVar[] vars;
+        [CompoundArray("Event Properties", "Name", "Value")]
+        [Tooltip("Invalid types or names will cause errors. Don't forget to compile Bolt.")]
+        [Title("Propety Names")]
+        public FsmString[] propNames;
 
-        private object[] _arguments; // must be filled by editor script
+        [Tooltip("Invalid types or names will cause errors. Don't forget to compile Bolt.")]
+        [Title("Propety Values")]
+        public FsmVar[] propValues;
+
+        public override void Reset()
+        {
+            targetList = null;
+            selectionId = 0;
+            propNames = null;
+            propValues = null;
+        }
 
         public override void OnEnter()
         {
@@ -31,21 +41,28 @@ namespace HutongGames.PlayMaker.Actions
         
         public void CreateEvent()
         {
-            // use reflection to fire Event.Create and Event.Send
+            // get the Bolt Event
             Type Event = Type.GetType(targetList[selectionId]);
             ConstructorInfo eventConstructor = Event.GetConstructor(Type.EmptyTypes);
             object EventObject = eventConstructor.Invoke(new object[]{});
 
+            // fill the Bolt Event with the data
             MethodInfo Event_Create = Event.GetMethod("Create");
             Event_Create.Invoke(EventObject, null);
-            
 
-            // fill the event arguments here...
+            for (int i = 0; i < propNames.Length; i++)
+            {
+                object value = PlayMakerUtils.GetValueFromFsmVar(Fsm, propValues[i]);
+                FieldInfo field = Event.GetField(propNames[i].Value);
+                field.SetValue(field, value);
+            }
 
-
-
+            // tell bolt to send the event
             MethodInfo Event_Send = Event.GetMethod("Send");
             Event_Send.Invoke(EventObject, null);
+
+            // broadcast the custom event
+            // CallbackGlobalProxy.BroadcastCustomEvent(Event.Name);
         }
     }
 }

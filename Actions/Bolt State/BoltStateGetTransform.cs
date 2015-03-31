@@ -63,7 +63,7 @@ namespace HutongGames.PlayMaker.Actions
                 }
             }
 
-            storeResult.Value = (Transform)Get.Property(_go, propertyName.Value);
+            storeResult.Value = Get.Property(_go, propertyName.Value) as Transform;
         }
 	}
 }

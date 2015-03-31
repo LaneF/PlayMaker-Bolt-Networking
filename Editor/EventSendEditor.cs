@@ -17,43 +17,18 @@ namespace HutongGames.PlayMakerEditor
     {
         BoltEventSend Action;
         string[] eventNames = BPEditorUtils.GetEventNameList().ToArray();
-        int eventChoiceId = 0;
 
         public override bool OnGUI()
         {
             Action = target as BoltEventSend; // identify the target action
 
             EventDefinition choiceEvent = BPEditorUtils.GetEventByIndex(Action.selectionId); // grab the chosen event
-            List<PropertyDefinition> ListOfProperties = BPEditorUtils.GetEventPropertyList(choiceEvent); // grab the list of properties in that event
-            List<string> ListOfPropertyNames = BPEditorUtils.GetPropertyNameList(choiceEvent); // get the names of all the properties in that event
 
             Action.targetList = eventNames; // update the list
             Action.selectionId = EditorGUILayout.Popup("Event", Action.selectionId, Action.targetList); // update the gui in the editor
-            EditField("propVariables");
-            EditField("vars");
 
-            // if the action dropdown does match this local Id... we must rebuild the Action GUI.
-            if (Action.selectionId != eventChoiceId)
-            {
-                // get the event type so we can access the properties and resize the array
-                Type SelectedEvent = Type.GetType(Action.targetList[Action.selectionId]);
-                Array.Clear(Action.vars, 0, Action.vars.Length);
-                Array.Resize<FsmVar>(ref Action.vars, ListOfProperties.Count);
-
-                for (int i = 0; i < ListOfProperties.Count; i++)
-                {
-                    // find the property by name, using the dictionary of property names from the compiler.
-                    FieldInfo field = SelectedEvent.GetField(ListOfPropertyNames[i]);
-                    object pull = field.GetValue(null);
-
-                    PlayMakerUtils.ApplyValueToFsmVar(Action.Fsm, Action.vars[i], pull);
-                    Action.vars[i].variableName = ListOfPropertyNames[i];
-                }
-            }
-
-            eventChoiceId = Action.selectionId;
-
-            return true;
+            EditField("propNames");
+            EditField("propValues");
 
             #region old
             /*
@@ -103,9 +78,9 @@ namespace HutongGames.PlayMakerEditor
           }
           */
             #endregion
+
+            return true; 
+
         }
     }
 }
-
-
-              
